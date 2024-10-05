@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { FaUser, FaEnvelope, FaLock, FaPhone, FaCalendarAlt, FaUserCircle, FaEye, FaEyeSlash } from 'react-icons/fa';
 import backgroundImage from '../assets/images/MH_1.jpg'; // Adjust the path based on your folder structure
+import api from "../api";
+// import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const SignUp = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [formData, setFormData] = useState({
     userName: '',
     age: '',
@@ -55,10 +59,32 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    // Create a payload with the necessary fields
+    const payload = {
+        username: formData.userName,
+        age: formData.age,
+        gender: formData.gender,
+        email: formData.email,
+        password: formData.password,
+        phone_number: formData.phoneNumber,
+        guardian_number: formData.guardianNumber,
+    };
+
+    try {
+        const response = await api.post('/api/user/register/', payload); 
+        if (response.status === 201){
+          alert('User created successfully');
+          navigate('/login'); // Redirect to the login page
+        }
+    } catch (error) {
+      console.error('Registration failed', error.response ? error.response.data : error.message);
+      alert('Registration failed. Please try again.');
+    }
   };
+
 
   return (
     <div
